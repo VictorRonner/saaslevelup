@@ -164,7 +164,11 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // --- CONFIGURAÇÃO ---
-        // COLOQUE SEU LINK AQUI (Pode ser Google Drive ou Link Direto mp4)
+        
+        // NOTA IMPORTANTE: O Google Drive bloqueia reprodução direta de arquivos grandes (vírus scan).
+        // SE O VÍDEO NÃO TOCAR: Baixe o vídeo, salve como "aula.mp4" na mesma pasta e mude o link abaixo para:
+        // const VIDEO_URL = "aula.mp4";
+        
         const VIDEO_URL = "https://drive.google.com/file/d/10fdPejLlqK6DFdSJNzW7oUDooY9Gvygr/view?usp=sharing"; 
         
         // Tempo para aparecer o botão (25min 30seg = 1530 segundos)
@@ -179,6 +183,9 @@
         // 2. Conversor de Google Drive
         function getGoogleDriveLink(url) {
             if (!url) return '';
+            // Se for arquivo local, retorna direto
+            if (!url.includes('http')) return url; 
+            
             if (url.includes('drive.google.com')) {
                 // Tenta extrair ID
                 const idMatch = url.match(/\/d\/(.+?)(\/|$)/) || url.match(/id=(.+?)($|&)/);
@@ -207,14 +214,33 @@
 
         function togglePlay() {
             if (video.paused) {
-                video.play();
-                isPlaying = true;
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        isPlaying = true;
+                        updatePlayButtonState(true);
+                    })
+                    .catch(error => {
+                        console.error("Erro ao reproduzir:", error);
+                        // Se der erro (provavelmente block do Google Drive), avisa no console
+                        if(VIDEO_URL.includes('drive.google')) {
+                            alert("O Google Drive bloqueou o stream direto deste vídeo. Por favor, baixe o arquivo, nomeie como 'aula.mp4' e atualize o arquivo index.html.");
+                        }
+                    });
+                }
+            } else {
+                video.pause();
+                isPlaying = false;
+                updatePlayButtonState(false);
+            }
+        }
+        
+        function updatePlayButtonState(playing) {
+             if (playing) {
                 bigPlayBtn.style.opacity = '0';
                 bigPlayBtn.style.pointerEvents = 'none';
                 smallPlayBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pause w-6 h-6"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg>';
             } else {
-                video.pause();
-                isPlaying = false;
                 bigPlayBtn.style.opacity = '1';
                 bigPlayBtn.style.pointerEvents = 'auto';
                 smallPlayBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play w-6 h-6"><polygon points="6 3 20 12 6 21 6 3"/></svg>';
@@ -281,8 +307,7 @@
 
         video.addEventListener('ended', () => {
             isPlaying = false;
-            bigPlayBtn.style.opacity = '1';
-            bigPlayBtn.style.pointerEvents = 'auto';
+            updatePlayButtonState(false);
         });
 
     </script>
