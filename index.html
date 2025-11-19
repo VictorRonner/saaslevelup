@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SaaS LevelUP - Aula Exclusiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                500: '#d946ef', // Fuchsia-500
+                600: '#c026d3', // Fuchsia-600
+              },
+              purple: {
+                600: '#9333ea',
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 1s ease-out',
+              'slide-up': 'slideUp 0.8s ease-out',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { transform: 'translateY(20px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+        body { background-color: #000000; color: #ffffff; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="font-sans selection:bg-brand-600 selection:text-white overflow-x-hidden flex flex-col min-h-screen">
+
+    <!-- HEADER -->
+    <header class="w-full py-8 bg-black z-50 flex justify-center items-center">
+        <div class="relative group cursor-default select-none">
+            <div class="flex flex-col items-center leading-none">
+                <div class="flex items-end relative">
+                    <div class="flex flex-col items-start">
+                        <span class="text-4xl font-bold text-white tracking-tight">SaaS</span>
+                        <div class="flex items-center">
+                            <span class="text-4xl font-bold text-white tracking-tight">Level</span>
+                            <span class="text-4xl font-bold text-white tracking-tight ml-0.5">UP</span>
+                        </div>
+                    </div>
+                    <!-- Logo SVG Arrow -->
+                    <div class="absolute -right-8 bottom-1 w-12 h-16 pointer-events-none">
+                        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_10px_rgba(192,38,211,0.6)]">
+                            <defs>
+                                <linearGradient id="arrowGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#9333ea" />
+                                    <stop offset="100%" stopColor="#d946ef" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M20,80 C20,60 40,40 70,20 M40,20 L70,20 L70,50" fill="none" stroke="url(#arrowGradient)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M68,20 L70,20 L70,22" fill="none" stroke="url(#arrowGradient)" stroke-width="4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow container mx-auto px-4 flex flex-col items-center justify-center w-full max-w-md my-8">
+        
+        <div class="w-full animate-fade-in relative flex flex-col gap-6">
+            
+            <!-- VIDEO PLAYER CONTAINER -->
+            <!-- Aspect Ratio 9:16 (Vertical) -->
+            <div id="videoContainer" class="relative w-full aspect-[9/16] bg-black rounded-lg overflow-hidden shadow-2xl group ring-1 ring-gray-900 cursor-pointer">
+                
+                <video id="mainVideo" class="w-full h-full object-cover" playsinline poster="">
+                    <!-- Source will be set by JS -->
+                    Seu navegador não suporta vídeos HTML5.
+                </video>
+
+                <!-- BIG PLAY BUTTON (Overlay) -->
+                <div id="bigPlayBtn" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] z-20 transition-opacity duration-300">
+                    <div class="w-24 h-24 bg-brand-600 hover:bg-brand-500 text-white rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-[0_0_40px_rgba(192,38,211,0.5)]">
+                        <i data-lucide="play" class="w-10 h-10 fill-white ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- CONTROLS BAR (Always Visible) -->
+                <div class="absolute bottom-0 left-0 right-0 z-30" onclick="event.stopPropagation()">
+                    
+                    <!-- Progress Bar (Vturb Style) -->
+                    <div id="progressBarContainer" class="relative w-full h-3 bg-gray-900/80 cursor-pointer group/bar">
+                        <div class="absolute inset-0 bg-white/5"></div>
+                        <!-- Gradient Fill -->
+                        <div id="progressBarFill" class="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-brand-500 shadow-[0_0_15px_rgba(217,70,239,0.5)] transition-all duration-300 ease-out w-0">
+                            <!-- Glow tip -->
+                            <div class="absolute right-0 top-0 bottom-0 w-2 bg-white/50 blur-[2px]"></div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons Strip -->
+                    <div class="flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black to-transparent">
+                        <div class="flex items-center gap-4">
+                            <!-- Play/Pause Small -->
+                            <button id="smallPlayBtn" class="text-white hover:text-brand-500 transition-colors drop-shadow-md">
+                                <i data-lucide="play" class="w-6 h-6 fill-current"></i>
+                            </button>
+                            <!-- Mute -->
+                            <button id="muteBtn" class="text-white/90 hover:text-white transition-colors">
+                                <i data-lucide="volume-2" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                        <div></div> <!-- Spacer -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- DISCLAIMER TEXT -->
+            <div class="text-center mt-2">
+                <p class="text-gray-400 text-xs md:text-sm font-medium tracking-widest opacity-90">
+                    *ESSA AULA PODE SAIR DO AR A QUALQUER MOMENTO*
+                </p>
+            </div>
+
+            <!-- CTA BUTTON (Hidden initially) -->
+            <div id="ctaContainer" class="hidden w-full px-2 mt-4">
+                <a href="https://pay.cakto.com.br/z4y4sdq" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-center py-4 rounded-lg text-xl shadow-[0_0_20px_rgba(37,211,102,0.4)] transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] uppercase tracking-wider animate-pulse-slow animate-slide-up">
+                    Quero Comprar Agora
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-6 text-center text-gray-800 text-xs opacity-30">
+        &copy; <span id="year"></span> SaaS LevelUP.
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- CONFIGURAÇÃO ---
+        // COLOQUE SEU LINK AQUI (Pode ser Google Drive ou Link Direto mp4)
+        const VIDEO_URL = "https://www.w3schools.com/html/mov_bbb.mp4"; 
+        
+        // Tempo para aparecer o botão (25min 30seg = 1530 segundos)
+        const SHOW_CTA_TIME = 1530; 
+
+        // --- LÓGICA DO SISTEMA ---
+
+        // 1. Setup de Ícones (Lucide)
+        lucide.createIcons();
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // 2. Conversor de Google Drive
+        function getGoogleDriveLink(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com')) {
+                // Tenta extrair ID
+                const idMatch = url.match(/\/d\/(.+?)(\/|$)/) || url.match(/id=(.+?)($|&)/);
+                if (idMatch && idMatch[1]) {
+                    return `https://drive.google.com/uc?export=download&id=${idMatch[1]}`;
+                }
+            }
+            return url;
+        }
+
+        // 3. Inicialização do Player
+        const video = document.getElementById('mainVideo');
+        const videoContainer = document.getElementById('videoContainer');
+        const bigPlayBtn = document.getElementById('bigPlayBtn');
+        const smallPlayBtn = document.getElementById('smallPlayBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const ctaContainer = document.getElementById('ctaContainer');
+
+        // Set Source
+        video.src = getGoogleDriveLink(VIDEO_URL);
+
+        // Estado
+        let isPlaying = false;
+
+        function togglePlay() {
+            if (video.paused) {
+                video.play();
+                isPlaying = true;
+                bigPlayBtn.style.opacity = '0';
+                bigPlayBtn.style.pointerEvents = 'none';
+                smallPlayBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pause w-6 h-6"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg>';
+            } else {
+                video.pause();
+                isPlaying = false;
+                bigPlayBtn.style.opacity = '1';
+                bigPlayBtn.style.pointerEvents = 'auto';
+                smallPlayBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play w-6 h-6"><polygon points="6 3 20 12 6 21 6 3"/></svg>';
+            }
+        }
+
+        function toggleMute() {
+            video.muted = !video.muted;
+            if (video.muted) {
+                muteBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-x w-6 h-6"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>';
+            } else {
+                muteBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-2 w-6 h-6"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+            }
+        }
+
+        // Event Listeners
+        videoContainer.addEventListener('click', togglePlay);
+        smallPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
+        muteBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMute(); });
+
+        // Vturb Style Progress Logic
+        // Visual = Math.pow(RealRatio, 0.7) -> Sobe rápido no começo
+        function updateProgress() {
+            const current = video.currentTime;
+            const duration = video.duration;
+            
+            // 1. Show CTA Button Logic
+            if (current >= SHOW_CTA_TIME) {
+                ctaContainer.classList.remove('hidden');
+            } else {
+                ctaContainer.classList.add('hidden');
+            }
+
+            // 2. Visual Progress Bar Logic
+            if (duration > 0) {
+                const realRatio = current / duration;
+                const visualPercent = Math.pow(realRatio, 0.7) * 100;
+                progressBarFill.style.width = `${visualPercent}%`;
+            }
+        }
+
+        video.addEventListener('timeupdate', updateProgress);
+
+        // Seek Logic (Click on bar)
+        progressBarContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const rect = progressBarContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const width = rect.width;
+            
+            // Porcentagem visual clicada (0 a 100)
+            const visualClicked = Math.max(0, Math.min(100, (x / width) * 100));
+            const visualNormalized = visualClicked / 100;
+
+            // Inverso da função visual: Real = Visual^(1/0.7) ~= Visual^1.428
+            if (video.duration) {
+                const realRatio = Math.pow(visualNormalized, 1.428);
+                video.currentTime = realRatio * video.duration;
+                
+                // Atualiza visual instantaneamente
+                progressBarFill.style.width = `${visualClicked}%`;
+            }
+        });
+
+        video.addEventListener('ended', () => {
+            isPlaying = false;
+            bigPlayBtn.style.opacity = '1';
+            bigPlayBtn.style.pointerEvents = 'auto';
+        });
+
+    </script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
